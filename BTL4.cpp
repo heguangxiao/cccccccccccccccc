@@ -389,6 +389,34 @@ void capNhatSV(LISTSV sv)
     printLine(100);
 }
 
+int xoaTheoID(LISTSV sv, int id)
+{
+    int found = 0;
+    NODESV *x;
+    for (NODESV *p = sv.pHead; p != NULL; p = p->next)
+    {
+        x.next = p->next;
+        if (p->data.idsv == id)
+        {
+            found = 1;
+            printLine(40);
+
+            cout << "\n Da xoa SV co ID = " << id;
+            printLine(40);
+            break;
+        }
+    }
+    if (found == 0)
+    {
+        printf("\n Sinh vien co ID = %d khong ton tai.", id);
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
 void pressAnyKey()
 {
     cout << "\n\nBam phim bat ky de tiep tuc...";
@@ -474,6 +502,25 @@ int main()
         case 7:
             cout << "\n7. Cap nhat thong tin sinh vien boi ID.";
             capNhatSV(dssv);
+            pressAnyKey();
+            break;
+        case 8:
+            if (slsv > 0)
+            {
+                int id;
+                cout << "\n8. Xoa sinh vien boi ID.";
+                cout << "\n Nhap ID: ";
+                cin >> id;
+                if (xoaTheoID(dssv, id) == 1)
+                {
+                    printf("\nSinh vien co id = %d da bi xoa.", &id);
+                    slsv--;
+                }
+            }
+            else
+            {
+                cout << "\nDanh sach sinh vien trong!";
+            }
             pressAnyKey();
             break;
         case 0:
