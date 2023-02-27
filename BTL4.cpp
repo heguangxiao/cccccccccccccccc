@@ -353,12 +353,39 @@ void hienThiBangDiem(LISTBD bd, LISTMH mh, LISTSV sv)
     printLine(100);
 }
 
+void capNhatThongTinSV(SV &sv)
+{
+    cin.ignore(1);
+    cout << "\n\n\tNhap ten: ";
+    cin.getline(sv.ten, 30);
+    fflush(stdin);
+    cout << "\n\n\tNhap gioi tinh: ";
+    cin.getline(sv.gioitinh, 30);
+    fflush(stdin);
+    cout << "\n\n\tNhap tuoi: ";
+    cin >> sv.tuoi;
+}
+
 void capNhatSV(LISTSV sv)
 {
     printLine(100);
     int id;
     cout << "\n Nhap ID sinh vien can thay doi thong tin: ";
     cin >> id;
+    int found = 0;
+    for (NODESV *p = sv.pHead; p != NULL; p = p->next)
+    {
+        if (p->data.idsv == id)
+        {
+            found = 1;
+            cout << "\n Cap nhat thong tin sinh vien co ID = " << id;
+            capNhatThongTinSV(p->data);
+        }
+    }
+    if (found == 0)
+    {
+        printf("\n Sinh vien co ID = %d khong ton tai.", id);
+    }
     printLine(100);
 }
 
