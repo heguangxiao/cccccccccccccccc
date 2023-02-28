@@ -502,6 +502,7 @@ void timKiemTheoTen(LISTSV sv, LISTMH mh, LISTBD bd, char ten[])
         cout << "Khong tim thay sinh vien co ten: %s", ten;
     }
 }
+
 void timKiemTheoTuoi(LISTSV sv, LISTMH mh, LISTBD bd, int start, int end)
 {
     NODESV *p = sv.pHead;
@@ -543,6 +544,78 @@ void timKiemTheoTuoi(LISTSV sv, LISTMH mh, LISTBD bd, int start, int end)
     }
 }
 
+void sapXepMonHocTheoTen(LISTMH &mh)
+{
+    MH tmp;
+    char tenSV1[30];
+    char tenSV2[30];
+    for (NODEMH *p = mh.pHead; p != NULL; p = p->next)
+    {
+        strcpy(tenSV1, p->data.ten);
+        for (NODEMH *q = mh.pHead->next; q != NULL; q = q->next)
+        {
+            strcpy(tenSV2, q->data.ten);
+            if (strcmp(strupr(tenSV1), strupr(tenSV2)) > 0)
+            {
+                tmp = p->data;
+                p->data = q->data;
+                q->data = tmp;
+            }
+        }
+    }
+    hienThiMonHoc(mh);
+}
+
+void HoanViSV(SV &a, SV &b)
+{
+    SV c = a;
+    a = b;
+    b = c;
+}
+
+void sapXepSinhVienTheoTen(LISTSV &l)
+{
+    NODESV *i, *j;
+    char tenSV1[30];
+    char tenSV2[30];
+    for (i = l.pHead; i != l.pTail; i = i->next)
+    {
+        strcpy(tenSV1, i->data.ten);
+        for (j = i->next; j != NULL; j = j->next)
+        {
+            strcpy(tenSV2, j->data.ten);
+            if (strcmp(strupr(tenSV1), strupr(tenSV2)) > 0)
+            {
+                HoanViSV(i->data, j->data);
+            }
+        }
+    }
+    hienThiSinhVien(l);
+}
+
+void sapXepSinhVienTheoTuoi(LISTSV &ds)
+{
+    NODESV *min;
+    NODESV *p, *q;
+    p = ds.pHead;
+    while (p != ds.pTail)
+    {
+        min = p;
+        q = p->next;
+        while (q != NULL)
+        {
+            if (q->data.tuoi < min->data.tuoi)
+            {
+                min = q;
+            }
+            q = q->next;
+        }
+        HoanViSV(min->data, p->data);
+        p = p->next;
+    }
+    hienThiSinhVien(ds);
+}
+
 void pressAnyKey()
 {
     cout << "\n\nBam phim bat ky de tiep tuc...";
@@ -564,6 +637,10 @@ int menu(int x)
     cout << "**  8. Xoa sinh vien boi ID.                                                **\n";
     cout << "**  9. Tim kiem sinh vien theo ten.                                         **\n";
     cout << "**  10. Tim kiem sinh vien theo tuoi.                                       **\n";
+    cout << "**  11. Sap xep mon hoc theo ten.                                           **\n";
+    cout << "**  12. Sap xep sinh vien theo ten.                                         **\n";
+    cout << "**  13. Sap xep sinh vien theo tuoi.                                        **\n";
+    cout << "**  14. Sap xep sinh vien theo diem TB.                                     **\n";
     cout << "**  0. Thoat                                                                **\n";
     cout << "******************************************************************************\n";
     cout << "Nhap tuy chon: ";
@@ -697,6 +774,21 @@ int main()
                 cin >> end;
                 timKiemTheoTuoi(dssv, dsmh, dsbd, start, end);
             }
+            pressAnyKey();
+            break;
+        case 11:
+            cout << "\n11. Sap xep mon hoc theo ten.";
+            sapXepMonHocTheoTen(dsmh);
+            pressAnyKey();
+            break;
+        case 12:
+            cout << "\n12. Sap xep sinh vien theo ten.";
+            sapXepSinhVienTheoTen(dssv);
+            pressAnyKey();
+            break;
+        case 13:
+            cout << "\n13. Sap xep sinh vien theo tuoi.";
+            sapXepSinhVienTheoTuoi(dssv);
             pressAnyKey();
             break;
         case 0:
