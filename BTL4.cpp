@@ -350,28 +350,27 @@ void hienThiBangDiem(LISTBD bd, LISTMH mh, LISTSV sv)
 
     cout << "\n";
 
+    cout << "\tTen";
+
     for (NODEMH *p = mh.pHead; p != NULL; p = p->next)
     {
         printf("\t%s", p->data.ten);
     }
 
-    cout << "\tTen";
-
     for (NODESV *p = sv.pHead; p != NULL; p = p->next)
     {
-        cout << "\n";
+        printf("\n\t%s", p->data.ten);
         for (NODEMH *q = mh.pHead; q != NULL; q = q->next)
         {
             for (NODEBD *o = bd.pHead; o != NULL; o = o->next)
             {
                 if (o->data.idmh == q->data.idmh && o->data.idsv == p->data.idsv)
                 {
-                    printf("\t%.2f", o->data.diem);
+                    printf("\t%.2f", o->data.diem > 0.0 ? o->data.diem : 0.0);
                     break;
                 }
             }
         }
-        printf("\t%s", p->data.ten);
     }
 
     printLine(100);
@@ -463,6 +462,47 @@ void xoaTheoID(LISTSV &sv, int id)
     }
 }
 
+void timKiemTheoTen(LISTSV sv, LISTMH mh, LISTBD bd, char ten[])
+{
+    char tenSV[30];
+    int found = 0;
+    int i = 0;
+    int count = 0;
+    cout << "\n\tSTT\tID\tTen\tGioi tinh\tTuoi";
+    for (NODEMH *p = mh.pHead; p != NULL; p = p->next)
+    {
+        cout << "\t%s", p->data.ten;
+    }
+    for (NODESV *p = sv.pHead; p != NULL; p = p->next)
+    {
+        strcpy(tenSV, p->data.ten);
+        if (strstr(strupr(tenSV), strupr(ten)))
+        {
+            count++;
+            printf("\n\t%d", ++i);
+            printf("\t%d", p->data.idsv);
+            printf("\t%s", p->data.ten);
+            printf("\t%s\t", p->data.gioitinh);
+            printf("\t%d", p->data.tuoi);
+            for (NODEMH *q = mh.pHead; q != NULL; q = q->next)
+            {
+                for (NODEBD *o = bd.pHead; o != NULL; o = o->next)
+                {
+                    if (o->data.idmh == q->data.idmh && o->data.idsv == p->data.idsv)
+                    {
+                        printf("\t%.2f", o->data.diem > 0.0 ? o->data.diem : 0.0);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if (count == 0)
+    {
+        cout << "Khong tim thay sinh vien co ten: %s", ten;
+    }
+}
+
 void pressAnyKey()
 {
     cout << "\n\nBam phim bat ky de tiep tuc...";
@@ -510,20 +550,31 @@ int main()
         switch (key)
         {
         case 1:
-            printf("\n");
+            cout << "\n1. Them mon hoc.";
             NhapMH(dsmh, idmh);
             idmh++;
             pressAnyKey();
             break;
         case 2:
-            printf("\n");
+            cout << "\n2. Them sinh vien.";
             NhapSV(dssv, idsv);
             idsv++;
             pressAnyKey();
             break;
         case 3:
             cout << "\n3. Nhap diem cho sinh vien.";
-            nhapDiemSV(dsbd, dsmh, dssv);
+            if (SLSV(dssv) == 0)
+            {
+                cout << "\nDanh sach sinh vien rong!!";
+            }
+            else if (SLMH(dsmh) == 0)
+            {
+                cout << "\nDanh sach mon hoc rong!!";
+            }
+            else
+            {
+                nhapDiemSV(dsbd, dsmh, dssv);
+            }
             pressAnyKey();
             break;
         case 4:
@@ -538,7 +589,18 @@ int main()
             break;
         case 6:
             cout << "\n6. Hien thi bang diem.";
-            hienThiBangDiem(dsbd, dsmh, dssv);
+            if (SLSV(dssv) == 0)
+            {
+                cout << "\nDanh sach sinh vien rong!!";
+            }
+            else if (SLMH(dsmh) == 0)
+            {
+                cout << "\nDanh sach mon hoc rong!!";
+            }
+            else
+            {
+                hienThiBangDiem(dsbd, dsmh, dssv);
+            }
             pressAnyKey();
             break;
         case 7:
@@ -558,6 +620,23 @@ int main()
                 cout << "\n Nhap ID: ";
                 cin >> id;
                 xoaTheoID(dssv, id);
+            }
+            pressAnyKey();
+            break;
+        case 9:
+            cout << "\n9. Tim kiem sinh vien theo ten.";
+            if (SLSV(dssv) == 0)
+            {
+                cout << "\nDanh sach sinh vien rong!!";
+            }
+            else
+            {
+                char ten[30];
+                cin.ignore(1);
+                cout << "\nNhap ten de tim kiem: ";
+                cin.getline(ten, 30);
+                fflush(stdin);
+                timKiemTheoTen(dssv, dsmh, dsbd, ten);
             }
             pressAnyKey();
             break;
