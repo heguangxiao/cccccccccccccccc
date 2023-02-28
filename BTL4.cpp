@@ -471,7 +471,7 @@ void timKiemTheoTen(LISTSV sv, LISTMH mh, LISTBD bd, char ten[])
     cout << "\n\tSTT\tID\tTen\tGioi tinh\tTuoi";
     for (NODEMH *p = mh.pHead; p != NULL; p = p->next)
     {
-        cout << "\t%s", p->data.ten;
+        printf("\t%s", p->data.ten);
     }
     for (NODESV *p = sv.pHead; p != NULL; p = p->next)
     {
@@ -490,7 +490,7 @@ void timKiemTheoTen(LISTSV sv, LISTMH mh, LISTBD bd, char ten[])
                 {
                     if (o->data.idmh == q->data.idmh && o->data.idsv == p->data.idsv)
                     {
-                        printf("\t%.2f", o->data.diem > 0.0 ? o->data.diem : 0.0);
+                        printf("\t%.2f", o->data.diem);
                         break;
                     }
                 }
@@ -500,6 +500,46 @@ void timKiemTheoTen(LISTSV sv, LISTMH mh, LISTBD bd, char ten[])
     if (count == 0)
     {
         cout << "Khong tim thay sinh vien co ten: %s", ten;
+    }
+}
+void timKiemTheoTuoi(LISTSV sv, LISTMH mh, LISTBD bd, int start, int end)
+{
+    NODESV *p = sv.pHead;
+    cout << "\n\tSTT\tID\tTen\tGioiTinh\tTuoi";
+    NODEMH *q = mh.pHead;
+    NODEBD *o = bd.pHead;
+    while (q != NULL)
+    {
+        printf("\t%s", q->data.ten);
+        q = q->next;
+    }
+    int i = 0;
+    while (p != NULL)
+    {
+        if (p->data.tuoi >= start && p->data.tuoi <= end)
+        {
+            printf("\n\t%d", ++i);
+            printf("\t%d", p->data.idsv);
+            printf("\t%s", p->data.ten);
+            printf("\t%s\t", p->data.gioitinh);
+            printf("\t%d", p->data.tuoi);
+            q = mh.pHead;
+            while (q != NULL)
+            {
+                o = bd.pHead;
+                while (o != NULL)
+                {
+                    if (o->data.idmh == q->data.idmh && o->data.idsv == p->data.idsv)
+                    {
+                        printf("\t%.2f", o->data.diem);
+                        break;
+                    }
+                    o = o->next;
+                }
+                q = q->next;
+            }
+        }
+        p = p->next;
     }
 }
 
@@ -523,6 +563,7 @@ int menu(int x)
     cout << "**  7. Cap nhat thong tin sinh vien boi ID.                                 **\n";
     cout << "**  8. Xoa sinh vien boi ID.                                                **\n";
     cout << "**  9. Tim kiem sinh vien theo ten.                                         **\n";
+    cout << "**  10. Tim kiem sinh vien theo tuoi.                                       **\n";
     cout << "**  0. Thoat                                                                **\n";
     cout << "******************************************************************************\n";
     cout << "Nhap tuy chon: ";
@@ -637,6 +678,24 @@ int main()
                 cin.getline(ten, 30);
                 fflush(stdin);
                 timKiemTheoTen(dssv, dsmh, dsbd, ten);
+            }
+            pressAnyKey();
+            break;
+        case 10:
+            cout << "\n10. Tim kiem sinh vien theo tuoi.";
+            if (SLSV(dssv) == 0)
+            {
+                cout << "\nDanh sach sinh vien rong!!";
+            }
+            else
+            {
+                int start;
+                int end;
+                cout << "\nDanh sach sinh vien co do tuoi tu: ";
+                cin >> start;
+                cout << " den :";
+                cin >> end;
+                timKiemTheoTuoi(dssv, dsmh, dsbd, start, end);
             }
             pressAnyKey();
             break;
