@@ -72,6 +72,18 @@ void ChenCuoiSV(LISTSV &ds, NODESV *p)
     }
 }
 
+int SLSV(LISTSV list)
+{
+    NODESV *p = list.pHead;
+    int size = 0;
+    while (p != NULL)
+    {
+        p = p->next;
+        size++;
+    }
+    return size;
+}
+
 struct monhoc
 {
     int idmh;
@@ -134,6 +146,18 @@ void ChenCuoiMH(LISTMH &ds, NODEMH *p)
         ds.pTail->next = p;
         ds.pTail = p;
     }
+}
+
+int SLMH(LISTMH list)
+{
+    NODEMH *p = list.pHead;
+    int size = 0;
+    while (p != NULL)
+    {
+        p = p->next;
+        size++;
+    }
+    return size;
 }
 
 struct bangdiem
@@ -211,11 +235,11 @@ void printLine(int n)
     cout << endl;
 }
 
-void NhapMH(LISTMH &dsmh, int slmh, int idmh)
+void NhapMH(LISTMH &dsmh, int idmh)
 {
     printLine(40);
     cin.ignore(1);
-    printf("\n\n\tNhap thong tin mon hoc thu %d: ", slmh + 1);
+    printf("\n\n\tNhap thong tin mon hoc thu %d: ", SLMH(dsmh) + 1);
     MH x;
     x.idmh = idmh;
     printf("\n\n\tNhap ten mon hoc : ");
@@ -228,11 +252,11 @@ void NhapMH(LISTMH &dsmh, int slmh, int idmh)
     printLine(40);
 }
 
-void NhapSV(LISTSV &dssv, int slsv, int idsv)
+void NhapSV(LISTSV &dssv, int idsv)
 {
     printLine(40);
     cin.ignore(1);
-    printf("\n\n\tNhap thong tin sinh vien thu %d: ", (slsv + 1));
+    printf("\n\n\tNhap thong tin sinh vien thu %d: ", (SLSV(dssv) + 1));
     SV x;
     x.idsv = idsv;
     printf("\n\n\tNhap ten sinh vien : ");
@@ -389,31 +413,53 @@ void capNhatSV(LISTSV sv)
     printLine(100);
 }
 
-int xoaTheoID(LISTSV sv, int id)
+void xoaTheoID(LISTSV &sv, int id)
 {
-    int found = 0;
-    NODESV *x;
-    for (NODESV *p = sv.pHead; p != NULL; p = p->next)
+    NODESV *pDel = sv.pHead; // tạo một node pDel để xóa
+    NODESV *pPre = NULL;
+    // dùng vòng lặp while để tìm ra pDel và pPre (vị trí đứng trước pDel)
+    while (pDel != NULL)
     {
-        x.next = p->next;
-        if (p->data.idsv == id)
+        if (pDel->data.idsv == id)
         {
-            found = 1;
-            printLine(40);
-
-            cout << "\n Da xoa SV co ID = " << id;
-            printLine(40);
             break;
         }
+        pPre = pDel;
+        pDel = pDel->next;
     }
-    if (found == 0)
+    // Nếu pDel == null tức là không tìm thấy số cần xóa
+    if (pDel == NULL)
     {
-        printf("\n Sinh vien co ID = %d khong ton tai.", id);
-        return 0;
+        printf("\n\n\tSinh vien co ID = %d khong ton tai.", id);
     }
+    // Ngược lại tiếp tục xét điều kiện
     else
     {
-        return 1;
+        // Nếu pDel == list.pHead, tức là số cần xóa ở đầu danh sách
+        if (pDel == sv.pHead)
+        {
+            sv.pHead = sv.pHead->next;
+            pDel->next = NULL;
+            delete pDel;
+            pDel = NULL;
+        }
+        // Nếu pDel == list.pTail, tức là số cần xóa ở cuối danh sách
+        else if (pDel->next == NULL)
+        {
+            sv.pTail = pPre;
+            pPre->next = NULL;
+            delete pDel;
+            pDel = NULL;
+        }
+        // và trường hợp cuối cùng số muốn xóa nằm ở giữa danh sách
+        else
+        {
+            pPre->next = pDel->next;
+            pDel->next = NULL;
+            delete pDel;
+            pDel = NULL;
+        }
+        printf("\n\n\tDelete success");
     }
 }
 
@@ -449,11 +495,9 @@ int main()
 
     LISTSV dssv;
     KhoiTaoSV(dssv);
-    int slsv = 0;
     int idsv = 1;
     LISTMH dsmh;
     KhoiTaoMH(dsmh);
-    int slmh = 0;
     int idmh = 1;
     LISTBD dsbd;
     KhoiTaoBD(dsbd);
@@ -467,15 +511,13 @@ int main()
         {
         case 1:
             printf("\n");
-            NhapMH(dsmh, slmh, idmh);
-            slmh++;
+            NhapMH(dsmh, idmh);
             idmh++;
             pressAnyKey();
             break;
         case 2:
             printf("\n");
-            NhapSV(dssv, slsv, idsv);
-            slsv++;
+            NhapSV(dssv, idsv);
             idsv++;
             pressAnyKey();
             break;
@@ -505,21 +547,17 @@ int main()
             pressAnyKey();
             break;
         case 8:
-            if (slsv > 0)
+            cout << "\n8. Xoa sinh vien boi ID.";
+            if (SLSV(dssv) == 0)
             {
-                int id;
-                cout << "\n8. Xoa sinh vien boi ID.";
-                cout << "\n Nhap ID: ";
-                cin >> id;
-                if (xoaTheoID(dssv, id) == 1)
-                {
-                    printf("\nSinh vien co id = %d da bi xoa.", &id);
-                    slsv--;
-                }
+                cout << "\nDanh sach rong!!";
             }
             else
             {
-                cout << "\nDanh sach sinh vien trong!";
+                int id;
+                cout << "\n Nhap ID: ";
+                cin >> id;
+                xoaTheoID(dssv, id);
             }
             pressAnyKey();
             break;
