@@ -12,6 +12,8 @@ struct sinhvien
     char ten[30];
     char gioitinh[5];
     int tuoi;
+    float DTB = 0.00;
+    char hocluc[10] = "Yeu";
 };
 typedef sinhvien SV;
 
@@ -164,7 +166,7 @@ struct bangdiem
 {
     int idsv;
     int idmh;
-    float diem;
+    float diem = 0.00;
 };
 typedef bangdiem BD;
 
@@ -274,6 +276,39 @@ void NhapSV(LISTSV &dssv, int idsv)
     printLine(40);
 }
 
+void tinhDTB(SV &sv, LISTMH mh, LISTBD bd)
+{
+    float dtb = 0;
+    if (SLMH(mh) > 0)
+    {
+        for (NODEMH *p = mh.pHead; p != NULL; p = p->next)
+        {
+            for (NODEBD *q = bd.pHead->next; q != NULL; q = q->next)
+            {
+                if (sv.idsv == q->data.idsv && p->data.idmh == q->data.idmh)
+                {
+                    dtb = dtb + q->data.diem;
+                    break;
+                }
+            }
+        }
+    }
+    dtb = dtb / SLMH(mh);
+    sv.DTB = dtb;
+}
+
+void xeploai(SV &sv, LISTMH mh, LISTBD bd)
+{
+    if (sv.DTB >= 8)
+        strcpy(sv.hocluc, "Gioi");
+    else if (sv.DTB >= 6.5)
+        strcpy(sv.hocluc, "Kha");
+    else if (sv.DTB >= 5)
+        strcpy(sv.hocluc, "Trung binh");
+    else
+        strcpy(sv.hocluc, "Yeu");
+}
+
 void nhapDiemSV(LISTBD &bd, LISTMH mh, LISTSV sv)
 {
     printLine(40);
@@ -284,15 +319,18 @@ void nhapDiemSV(LISTBD &bd, LISTMH mh, LISTSV sv)
         for (NODEMH *q = mh.pHead; q != NULL; q = q->next)
         {
             cin.ignore(1);
+            NODEBD *o = new NODEBD;
             BD x;
             x.idsv = p->data.idsv;
             x.idmh = q->data.idmh;
             printf("\n\n\tNhap diem mon %s: ", q->data.ten);
             cin >> x.diem;
-            NODEBD *o = new NODEBD;
             o = TaoNodeBD(x);
             ChenCuoiBD(bd, o);
         }
+
+        tinhDTB(p->data, mh, bd);
+        xeploai(p->data, mh, bd);
     }
 
     printLine(40);
@@ -325,15 +363,15 @@ void hienThiSinhVien(LISTSV ds)
     printLine(100);
     if (KiemTraRongSV(ds) == 0)
     {
-        cout << "\n\tSTT\tID\tGioi tinh\tTuoi\tHo va ten";
+        cout << "\n\tSTT\tID\tTen\tGioi tinh\tTuoi";
         int i = 0;
         for (NODESV *p = ds.pHead; p != NULL; p = p->next)
         {
             printf("\n\t%d", ++i);
             printf("\t%d", p->data.idsv);
+            printf("\t%s", p->data.ten);
             printf("\t%s\t", p->data.gioitinh);
             printf("\t%d", p->data.tuoi);
-            printf("\t%s", p->data.ten);
         }
         printf("\n");
     }
@@ -357,20 +395,30 @@ void hienThiBangDiem(LISTBD bd, LISTMH mh, LISTSV sv)
         printf("\t%s", p->data.ten);
     }
 
+    cout << "\tDTB\tHocLuc";
+
     for (NODESV *p = sv.pHead; p != NULL; p = p->next)
     {
         printf("\n\t%s", p->data.ten);
         for (NODEMH *q = mh.pHead; q != NULL; q = q->next)
         {
+            int count = 0;
             for (NODEBD *o = bd.pHead; o != NULL; o = o->next)
             {
                 if (o->data.idmh == q->data.idmh && o->data.idsv == p->data.idsv)
                 {
-                    printf("\t%.2f", o->data.diem > 0.0 ? o->data.diem : 0.0);
+                    count++;
+                    printf("\t%.2f", o->data.diem);
                     break;
                 }
             }
+            if (count == 0)
+            {
+                printf("\t0.00");
+            }
         }
+        printf("\t%.2f", p->data.DTB);
+        printf("\t%s", p->data.hocluc);
     }
 
     printLine(100);
@@ -616,6 +664,29 @@ void sapXepSinhVienTheoTuoi(LISTSV &ds)
     hienThiSinhVien(ds);
 }
 
+void sapXepSinhVienTheoDTB(LISTSV &ds, LISTMH mh, LISTBD bd)
+{
+    NODESV *min;
+    NODESV *p, *q;
+    p = ds.pHead;
+    while (p != ds.pTail)
+    {
+        min = p;
+        q = p->next;
+        while (q != NULL)
+        {
+            if (q->data.DTB < min->data.DTB)
+            {
+                min = q;
+            }
+            q = q->next;
+        }
+        HoanViSV(min->data, p->data);
+        p = p->next;
+    }
+    hienThiBangDiem(bd, mh, ds);
+}
+
 void pressAnyKey()
 {
     cout << "\n\nBam phim bat ky de tiep tuc...";
@@ -789,6 +860,11 @@ int main()
         case 13:
             cout << "\n13. Sap xep sinh vien theo tuoi.";
             sapXepSinhVienTheoTuoi(dssv);
+            pressAnyKey();
+            break;
+        case 14:
+            cout << "\n14. Sap xep sinh vien theo DTB.";
+            sapXepSinhVienTheoDTB(dssv, dsmh, dsbd);
             pressAnyKey();
             break;
         case 0:
