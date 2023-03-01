@@ -1,6 +1,13 @@
 {
     "files.associations": {
         "typeinfo": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp",
+        "*.tcc": "cpp",
+        "ostream": "cpp",
+        "fstream": "cpp",
+        "string_view": "cpp",
+        "new": "cpp"
     }
 }

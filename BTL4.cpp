@@ -1,8 +1,10 @@
 #include <conio.h>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 
 using namespace std;
 
@@ -227,6 +229,18 @@ void ChenCuoiBD(LISTBD &ds, NODEBD *p)
     }
 }
 
+int SLBD(LISTBD list)
+{
+    NODEBD *p = list.pHead;
+    int size = 0;
+    while (p != NULL)
+    {
+        p = p->next;
+        size++;
+    }
+    return size;
+}
+
 void printLine(int n)
 {
     cout << endl;
@@ -305,7 +319,7 @@ void xeploai(SV &sv, LISTMH mh, LISTBD bd)
     else if (sv.DTB >= 6.5)
         strcpy(sv.hocluc, "Kha");
     else if (sv.DTB >= 5)
-        strcpy(sv.hocluc, "Trung binh");
+        strcpy(sv.hocluc, "TB");
     else
         strcpy(sv.hocluc, "Yeu");
 }
@@ -327,7 +341,7 @@ void hienThiBD(LISTBD bd)
     }
     else
     {
-        cout << "\nSanh sach mon hoc trong!";
+        cout << "\nDanh sach mon hoc trong!";
     }
     printLine(40);
 }
@@ -379,7 +393,7 @@ void hienThiMonHoc(LISTMH mh)
     }
     else
     {
-        cout << "\nSanh sach mon hoc trong!";
+        cout << "\nDanh sach mon hoc trong!";
     }
     printLine(40);
 }
@@ -533,6 +547,45 @@ void xoaTheoID(LISTSV &sv, int id)
             pDel = NULL;
         }
         printf("\n\n\tDelete success");
+    }
+}
+
+void xoaAllBd(LISTBD &bd)
+{
+    NODEBD *pDel = bd.pHead;
+    NODEBD *pPre = NULL;
+    while (pDel != NULL)
+    {
+        bd.pHead = bd.pHead->next;
+        pDel->next = NULL;
+        delete pDel;
+        pDel = bd.pHead;
+    }
+}
+
+void xoaAllSv(LISTSV &sv)
+{
+    NODESV *pDel = sv.pHead;
+    NODESV *pPre = NULL;
+    while (pDel != NULL)
+    {
+        sv.pHead = sv.pHead->next;
+        pDel->next = NULL;
+        delete pDel;
+        pDel = sv.pHead;
+    }
+}
+
+void xoaAllMh(LISTMH &mh)
+{
+    NODEMH *pDel = mh.pHead;
+    NODEMH *pPre = NULL;
+    while (pDel != NULL)
+    {
+        mh.pHead = mh.pHead->next;
+        pDel->next = NULL;
+        delete pDel;
+        pDel = mh.pHead;
     }
 }
 
@@ -818,6 +871,36 @@ void sinhVienCoDiemTrungBinhNhoNhat(LISTSV sv, LISTMH mh, LISTBD bd)
     }
 }
 
+int idlnsv(LISTSV sv)
+{
+    int x = 1;
+    NODESV *p = sv.pHead;
+    while (p != NULL)
+    {
+        if (p->data.idsv > x)
+        {
+            x = p->data.idsv;
+        }
+        p = p->next;
+    }
+    return x;
+}
+
+int idlnmh(LISTMH mh)
+{
+    int x = 1;
+    NODEMH *p = mh.pHead;
+    while (p != NULL)
+    {
+        if (p->data.idmh > x)
+        {
+            x = p->data.idmh;
+        }
+        p = p->next;
+    }
+    return x;
+}
+
 void sinhVienCoDiemTrungBinhLonNhat(LISTSV sv, LISTMH mh, LISTBD bd)
 {
     if (SLSV(sv) > 0)
@@ -873,7 +956,7 @@ int soLuongSinhVienNu(LISTSV sv)
     while (p != NULL)
     {
         strcpy(gioitinh, p->data.gioitinh);
-        if (strcmp(strupr(gioitinh), "nu") > 0)
+        if (strcmp(strupr(gioitinh), "NU") > 0)
         {
             result++;
         }
@@ -890,7 +973,7 @@ int soLuongSinhVienNam(LISTSV sv)
     while (p != NULL)
     {
         strcpy(gioitinh, p->data.gioitinh);
-        if (strcmp(strupr(gioitinh), "nam") > 0)
+        if (strcmp(strupr(gioitinh), "NAM") > 0)
         {
             result++;
         }
@@ -984,11 +1067,6 @@ void ghiFile(LISTSV sv, LISTMH mh, LISTBD bd, char fileName[])
 {
     FILE *fp;
     fp = fopen(fileName, "w");
-    // for (int i = 0; i < n; i++)
-    // {
-    //     fprintf(fp, "%5d%30s%5s%5d%10f%10f%10f%10f%10s\n", a[i].id, a[i].ten, a[i].gioiTinh,
-    //             a[i].tuoi, a[i].diemToan, a[i].diemLy, a[i].diemHoa, a[i].diemTB, a[i].hocluc);
-    // }
 
     fprintf(fp, "%5s%5s%30s%30s%5s", "STT", "ID", "Ten", "GioiTinh", "Tuoi");
 
@@ -1028,6 +1106,147 @@ void ghiFile(LISTSV sv, LISTMH mh, LISTBD bd, char fileName[])
     }
 
     fclose(fp);
+}
+
+string split(string str, string delimiter)
+{
+    size_t pos = 0;
+    string token;
+    while ((pos = str.find(delimiter)) != string::npos)
+    {
+        token = str.substr(0, pos);
+        cout << token << endl;
+        str.erase(0, pos + delimiter.length());
+    }
+    return str;
+}
+
+void docFile(LISTSV &sv, LISTMH &mh, LISTBD &bd, char fileName[])
+{
+    char *p;
+    int n = 0;
+    int coll = 0;
+    int idmh = 1;
+    // Khai báo vector để lưu các dòng đọc được
+    vector<string> lines;
+    string line;
+    // Mở file bằng ifstream
+    ifstream ifs(fileName);
+    // Kiểm tra file đã mở thành công hay chưa
+    if (!ifs.is_open())
+    {
+        cerr << "Could not open the file - '"
+             << fileName << "'" << endl;
+    }
+    else
+    {
+        // Đọc từng dòng trong
+        while (getline(ifs, line))
+        {
+            lines.push_back(line); // Lưu từng dòng như một phần tử vào vector lines.
+            n++;
+        }
+        char arr[lines[0].length() + 1];
+        strcpy(arr, lines[0].c_str());
+        p = strtok(arr, " ");
+        while (p != NULL)
+        {
+            // Chỉ dịnh đối số NULL trong hàm strtok để tiếp tục tách chuỗi ban đầu
+            p = strtok(NULL, " ");
+
+            if (p != NULL)
+            {
+                // printf("--%s--", p);
+                if (strcmp(p, "STT") == 0 || strcmp(p, "ID") == 0 || strcmp(p, "Ten") == 0 ||
+                    strcmp(p, "GioiTinh") == 0 || strcmp(p, "Tuoi") == 0 || strcmp(p, "DTB") == 0 ||
+                    strcmp(p, "HocLuc") == 0)
+                {
+                }
+                else
+                {
+                    MH x;
+                    x.idmh = idmh;
+                    for (int i = 0; i < 30; i++)
+                    {
+                        x.ten[i] = p[i];
+                    }
+                    // x.ten = p;
+                    NODEMH *m = new NODEMH;
+                    m = TaoNodeMH(x);
+                    ChenCuoiMH(mh, m);
+                    idmh++;
+                }
+            }
+        }
+        for (int i = 1; i < n; i++)
+        {
+            idmh = 1;
+            char arr[lines[i].length() + 1];
+            strcpy(arr, lines[i].c_str());
+            p = strtok(arr, " ");
+
+            SV x;
+            BD y;
+            coll = 0;
+            while (p != NULL)
+            {
+                p = strtok(NULL, " ");
+                if (coll == 0)
+                {
+                    x.idsv = atoi(p);
+                }
+                else if (coll == 1)
+                {
+                    for (int i2 = 0; i2 < 30; i2++)
+                    {
+                        x.ten[i2] = p[i2];
+                    }
+                }
+                else if (coll == 2)
+                {
+                    for (int i2 = 0; i2 < 30; i2++)
+                    {
+                        x.gioitinh[i2] = p[i2];
+                    }
+                }
+                else if (coll == 3)
+                {
+                    x.tuoi = atoi(p);
+                }
+                else if (coll > 3 && coll <= (3 + SLMH(mh)))
+                {
+                    if (idmh <= SLMH(mh))
+                    {
+                        y.idsv = x.idsv;
+                        y.idmh = idmh;
+                        y.diem = atof(p);
+                        NODEBD *z = new NODEBD;
+                        z = TaoNodeBD(y);
+                        ChenCuoiBD(bd, z);
+                    }
+                    idmh++;
+                }
+                else if (coll == (4 + SLMH(mh)))
+                {
+                    x.DTB = atof(p);
+                }
+                else if (coll == (5 + SLMH(mh)))
+                {
+                    for (int i2 = 0; i2 < 30; i2++)
+                    {
+                        x.hocluc[i2] = p[i2];
+                    }
+                }
+                coll++;
+            }
+            NODESV *s = new NODESV;
+            s = TaoNodeSV(x);
+            ChenCuoiSV(sv, s);
+        }
+    }
+
+    // Đóng file
+    ifs.close();
 }
 
 void pressAnyKey()
@@ -1085,6 +1304,7 @@ int main()
     chick(dsbd);
 
     int key;
+    bool check = true;
 
     while (true)
     {
@@ -1261,19 +1481,54 @@ int main()
             break;
         case 22:
             cout << "\n22. Doc file.";
+            printLine(100);
+            check = true;
+            if (SLSV(dssv) > 0 || SLMH(dsmh) > 0 || SLBD(dsbd) > 1)
+            {
+                char flag[5], temp[5] = "yes";
+                cin.ignore(1);
+                printf("\n\n\tDanh sach hien dang co du lieu.\n\tDoc file len co the bi trung du lieu.\n\tBan co dong y xoa het du lieu roi doc file khong? (Yes/No): ");
+                cin.getline(flag, 5);
+                fflush(stdin);
+                if (strcmp(strupr(flag), strupr(temp)) == 0)
+                {
+                    xoaAllBd(dsbd);
+                    xoaAllMh(dsmh);
+                    xoaAllSv(dssv);
+                }
+                else
+                {
+                    check = false;
+                    printf("\n\tBan da tu choi su dung chuc nang nay!!!");
+                }
+            }
+
+            if (check)
+            {
+                printf("\nBegin read file.");
+                docFile(dssv, dsmh, dsbd, fileName);
+                idmh = idlnmh(dsmh) + 1;
+                idsv = idlnsv(dssv) + 1;
+                printf("%d", idmh);
+                printf("%d", idsv);
+                printf("\nRead file success.");
+            }
+            printLine(100);
             pressAnyKey();
             break;
         case 23:
+            printLine(100);
             if (SLSV(dssv) > 0)
             {
                 cout << "\n23. Ghi file.";
                 ghiFile(dssv, dsmh, dsbd, fileName);
+                printf("\n\tGhi danh sach sinh vien vao file %s thanh cong!", fileName);
             }
             else
             {
-                cout << "\nSanh sach sinh vien trong!";
+                cout << "\nDanh sach sinh vien trong!";
             }
-            printf("\nGhi danh sach sinh vien vao file %s thanh cong!", fileName);
+            printLine(100);
             pressAnyKey();
             break;
         case 99:
