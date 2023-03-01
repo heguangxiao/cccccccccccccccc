@@ -288,6 +288,7 @@ void tinhDTB(SV &sv, LISTMH mh, LISTBD bd)
                 if (sv.idsv == q->data.idsv && p->data.idmh == q->data.idmh)
                 {
                     dtb = dtb + q->data.diem;
+                    // printf("\n ---- %.2f ----", dtb);
                     break;
                 }
             }
@@ -307,6 +308,28 @@ void xeploai(SV &sv, LISTMH mh, LISTBD bd)
         strcpy(sv.hocluc, "Trung binh");
     else
         strcpy(sv.hocluc, "Yeu");
+}
+void hienThiBD(LISTBD bd)
+{
+    printLine(40);
+    if (KiemTraRongBD(bd) == 0)
+    {
+        cout << "\n\tSTT\tIDSV\tIDMH\tDIEM";
+        int i = 0;
+        for (NODEBD *p = bd.pHead; p != NULL; p = p->next)
+        {
+            printf("\n\t%d", ++i);
+            printf("\t%d", p->data.idsv);
+            printf("\t%d", p->data.idmh);
+            printf("\t%.2f", p->data.diem);
+        }
+        printf("\n");
+    }
+    else
+    {
+        cout << "\nSanh sach mon hoc trong!";
+    }
+    printLine(40);
 }
 
 void nhapDiemSV(LISTBD &bd, LISTMH mh, LISTSV sv)
@@ -328,7 +351,10 @@ void nhapDiemSV(LISTBD &bd, LISTMH mh, LISTSV sv)
             o = TaoNodeBD(x);
             ChenCuoiBD(bd, o);
         }
+    }
 
+    for (NODESV *p = sv.pHead; p != NULL; p = p->next)
+    {
         tinhDTB(p->data, mh, bd);
         xeploai(p->data, mh, bd);
     }
@@ -687,6 +713,323 @@ void sapXepSinhVienTheoDTB(LISTSV &ds, LISTMH mh, LISTBD bd)
     hienThiBangDiem(bd, mh, ds);
 }
 
+void sinhVienCoTuoiNhoNhat(LISTSV sv)
+{
+    if (SLSV(sv) > 0)
+    {
+        printLine(100);
+        NODESV *p = sv.pHead;
+        SV tmp = sv.pHead->data;
+        while (p != NULL)
+        {
+            if (p->data.tuoi < tmp.tuoi)
+            {
+                tmp = p->data;
+            }
+            p = p->next;
+        }
+        cout << "\n\tID\tTen\tGioi tinh\tTuoi";
+        printf("\n\t%d", tmp.idsv);
+        printf("\t%s", tmp.ten);
+        printf("\t%s\t", tmp.gioitinh);
+        printf("\t%d", tmp.tuoi);
+        printf("\n");
+        printLine(100);
+    }
+    else
+    {
+        printf("\nDanh sach trong\n");
+    }
+}
+
+void sinhVienCoTuoiLonNhat(LISTSV sv)
+{
+    if (SLSV(sv) > 0)
+    {
+        printLine(100);
+        NODESV *p = sv.pHead;
+        SV tmp = sv.pHead->data;
+        while (p != NULL)
+        {
+            if (p->data.tuoi > tmp.tuoi)
+            {
+                tmp = p->data;
+            }
+            p = p->next;
+        }
+        cout << "\n\tID\tTen\tGioi tinh\tTuoi";
+        printf("\n\t%d", tmp.idsv);
+        printf("\t%s", tmp.ten);
+        printf("\t%s\t", tmp.gioitinh);
+        printf("\t%d", tmp.tuoi);
+        printf("\n");
+        printLine(100);
+    }
+    else
+    {
+        printf("\nDanh sach trong\n");
+    }
+}
+
+void sinhVienCoDiemTrungBinhNhoNhat(LISTSV sv, LISTMH mh, LISTBD bd)
+{
+    if (SLSV(sv) > 0)
+    {
+        printLine(100);
+        NODESV *p = sv.pHead;
+        SV tmp = sv.pHead->data;
+        while (p != NULL)
+        {
+            if (p->data.DTB < tmp.DTB)
+            {
+                tmp = p->data;
+            }
+            p = p->next;
+        }
+        cout << "\n\tID\tTen\tGioi tinh\tTuoi";
+        for (NODEMH *p = mh.pHead; p != NULL; p = p->next)
+        {
+            printf("\t%s", p->data.ten);
+        }
+        cout << "\tDTB\tHocLuc";
+        printf("\n\t%d", tmp.idsv);
+        printf("\t%s", tmp.ten);
+        printf("\t%s\t", tmp.gioitinh);
+        printf("\t%d", tmp.tuoi);
+        for (NODEMH *p = mh.pHead; p != NULL; p = p->next)
+        {
+            for (NODEBD *q = bd.pHead; q != NULL; q = q->next)
+            {
+                if (q->data.idsv == tmp.idsv && q->data.idmh == p->data.idmh)
+                {
+                    printf("\t%.2f", q->data.diem);
+                    break;
+                }
+            }
+        }
+        printf("\t%.2f", tmp.DTB);
+        printf("\t%s", tmp.hocluc);
+        printf("\n");
+        printLine(100);
+    }
+    else
+    {
+        printf("\nDanh sach trong\n");
+    }
+}
+
+void sinhVienCoDiemTrungBinhLonNhat(LISTSV sv, LISTMH mh, LISTBD bd)
+{
+    if (SLSV(sv) > 0)
+    {
+        printLine(100);
+        NODESV *p = sv.pHead;
+        SV tmp = sv.pHead->data;
+        while (p != NULL)
+        {
+            if (p->data.DTB > tmp.DTB)
+            {
+                tmp = p->data;
+            }
+            p = p->next;
+        }
+        cout << "\n\tID\tTen\tGioi tinh\tTuoi";
+        for (NODEMH *p = mh.pHead; p != NULL; p = p->next)
+        {
+            printf("\t%s", p->data.ten);
+        }
+        cout << "\tDTB\tHocLuc";
+        printf("\n\t%d", tmp.idsv);
+        printf("\t%s", tmp.ten);
+        printf("\t%s\t", tmp.gioitinh);
+        printf("\t%d", tmp.tuoi);
+        for (NODEMH *p = mh.pHead; p != NULL; p = p->next)
+        {
+            for (NODEBD *q = bd.pHead; q != NULL; q = q->next)
+            {
+                if (q->data.idsv == tmp.idsv && q->data.idmh == p->data.idmh)
+                {
+                    printf("\t%.2f", q->data.diem);
+                    break;
+                }
+            }
+        }
+        printf("\t%.2f", tmp.DTB);
+        printf("\t%s", tmp.hocluc);
+        printf("\n");
+        printLine(100);
+    }
+    else
+    {
+        printf("\nDanh sach trong\n");
+    }
+}
+
+int soLuongSinhVienNu(LISTSV sv)
+{
+    int result = 0;
+    NODESV *p = sv.pHead;
+    char gioitinh[30];
+    while (p != NULL)
+    {
+        strcpy(gioitinh, p->data.gioitinh);
+        if (strcmp(strupr(gioitinh), "nu") > 0)
+        {
+            result++;
+        }
+        p = p->next;
+    }
+    return result;
+}
+
+int soLuongSinhVienNam(LISTSV sv)
+{
+    int result = 0;
+    NODESV *p = sv.pHead;
+    char gioitinh[30];
+    while (p != NULL)
+    {
+        strcpy(gioitinh, p->data.gioitinh);
+        if (strcmp(strupr(gioitinh), "nam") > 0)
+        {
+            result++;
+        }
+        p = p->next;
+    }
+    return result;
+}
+
+int soLuongXepLoaiYeu(LISTSV sv)
+{
+    int result = 0;
+    NODESV *p = sv.pHead;
+    while (p != NULL)
+    {
+        if (p->data.DTB < 5)
+        {
+            result++;
+        }
+        p = p->next;
+    }
+    return result;
+}
+
+int soLuongXepLoaiTrungBinh(LISTSV sv)
+{
+    int result = 0;
+    NODESV *p = sv.pHead;
+    while (p != NULL)
+    {
+        if (p->data.DTB < 6.5 && p->data.DTB >= 5)
+        {
+            result++;
+        }
+        p = p->next;
+    }
+    return result;
+}
+
+int soLuongXepLoaiKha(LISTSV sv)
+{
+    int result = 0;
+    NODESV *p = sv.pHead;
+    while (p != NULL)
+    {
+        if (p->data.DTB < 8 && p->data.DTB >= 6.5)
+        {
+            result++;
+        }
+        p = p->next;
+    }
+    return result;
+}
+
+int soLuongXepLoaiGioi(LISTSV sv)
+{
+    int result = 0;
+    NODESV *p = sv.pHead;
+    while (p != NULL)
+    {
+        if (p->data.DTB >= 8)
+        {
+            result++;
+        }
+        p = p->next;
+    }
+    return result;
+}
+
+void thongKeXepLoaiSinhVien(LISTSV sv)
+{
+    printLine(100);
+    printf("\n\tSo luong sinh vien xep loai Yeu: %d", soLuongXepLoaiYeu(sv));
+    printf("\n\tSo luong sinh vien xep loai Trung Binh: %d", soLuongXepLoaiTrungBinh(sv));
+    printf("\n\tSo luong sinh vien xep loai Kha: %d", soLuongXepLoaiKha(sv));
+    printf("\n\tSo luong sinh vien xep loai Gioi: %d", soLuongXepLoaiGioi(sv));
+    printLine(100);
+}
+
+void chick(LISTBD &bd)
+{
+    BD x;
+    x.idmh = 0;
+    x.idsv = 0;
+    x.diem = 0.00;
+    NODEBD *p = new NODEBD;
+    p = TaoNodeBD(x);
+    ChenCuoiBD(bd, p);
+}
+
+void ghiFile(LISTSV sv, LISTMH mh, LISTBD bd, char fileName[])
+{
+    FILE *fp;
+    fp = fopen(fileName, "w");
+    // for (int i = 0; i < n; i++)
+    // {
+    //     fprintf(fp, "%5d%30s%5s%5d%10f%10f%10f%10f%10s\n", a[i].id, a[i].ten, a[i].gioiTinh,
+    //             a[i].tuoi, a[i].diemToan, a[i].diemLy, a[i].diemHoa, a[i].diemTB, a[i].hocluc);
+    // }
+
+    fprintf(fp, "%5s%5s%30s%30s%5s", "STT", "ID", "Ten", "GioiTinh", "Tuoi");
+
+    NODESV *p = sv.pHead;
+    NODEMH *q = mh.pHead;
+    NODEBD *o = bd.pHead;
+    int i = 0;
+
+    while (q != NULL)
+    {
+        fprintf(fp, "%10s", q->data.ten);
+        q = q->next;
+    }
+
+    fprintf(fp, "%10s%15s\n", "DTB", "HocLuc");
+
+    while (p != NULL)
+    {
+        fprintf(fp, "%5d%5d%30s%30s%5d", ++i, p->data.idsv, p->data.ten, p->data.gioitinh, p->data.tuoi);
+        q = mh.pHead;
+        while (q != NULL)
+        {
+            o = bd.pHead;
+            while (o != NULL)
+            {
+                if (o->data.idsv == p->data.idsv && o->data.idmh == q->data.idmh)
+                {
+                    fprintf(fp, "%10.2f", o->data.diem);
+                    break;
+                }
+                o = o->next;
+            }
+            q = q->next;
+        }
+        fprintf(fp, "%10.2f%15s\n", p->data.DTB, p->data.hocluc);
+        p = p->next;
+    }
+
+    fclose(fp);
+}
+
 void pressAnyKey()
 {
     cout << "\n\nBam phim bat ky de tiep tuc...";
@@ -712,6 +1055,15 @@ int menu(int x)
     cout << "**  12. Sap xep sinh vien theo ten.                                         **\n";
     cout << "**  13. Sap xep sinh vien theo tuoi.                                        **\n";
     cout << "**  14. Sap xep sinh vien theo diem TB.                                     **\n";
+    cout << "**  15. Sinh vien co tuoi nho nhat.                                         **\n";
+    cout << "**  16. Sinh vien co tuoi lon nhat.                                         **\n";
+    cout << "**  17. Sinh vien co diem trung binh nho nhat.                              **\n";
+    cout << "**  18. Sinh vien co diem trung binh lon nhat.                              **\n";
+    cout << "**  19. So luong sinh vien nu.                                              **\n";
+    cout << "**  20. So luong sinh vien nam.                                             **\n";
+    cout << "**  21. Thong ke xep loai sinh vien.                                        **\n";
+    cout << "**  22. Doc file.                                                           **\n";
+    cout << "**  23. Ghi file.                                                           **\n";
     cout << "**  0. Thoat                                                                **\n";
     cout << "******************************************************************************\n";
     cout << "Nhap tuy chon: ";
@@ -721,7 +1073,7 @@ int menu(int x)
 
 int main()
 {
-
+    char fileName[] = "sinhvien.txt";
     LISTSV dssv;
     KhoiTaoSV(dssv);
     int idsv = 1;
@@ -730,6 +1082,7 @@ int main()
     int idmh = 1;
     LISTBD dsbd;
     KhoiTaoBD(dsbd);
+    chick(dsbd);
 
     int key;
 
@@ -865,6 +1218,67 @@ int main()
         case 14:
             cout << "\n14. Sap xep sinh vien theo DTB.";
             sapXepSinhVienTheoDTB(dssv, dsmh, dsbd);
+            pressAnyKey();
+            break;
+        case 15:
+            cout << "\n15. Sinh vien co tuoi nho nhat.";
+            sinhVienCoTuoiNhoNhat(dssv);
+            pressAnyKey();
+            break;
+        case 16:
+            cout << "\n16. Sinh vien co tuoi lon nhat.";
+            sinhVienCoTuoiLonNhat(dssv);
+            pressAnyKey();
+            break;
+        case 17:
+            cout << "\n17. Sinh vien co diem trung binh nho nhat.";
+            sinhVienCoDiemTrungBinhNhoNhat(dssv, dsmh, dsbd);
+            pressAnyKey();
+            break;
+        case 18:
+            cout << "\n18. Sinh vien co dien trung binh lon nhat.";
+            sinhVienCoDiemTrungBinhLonNhat(dssv, dsmh, dsbd);
+            pressAnyKey();
+            break;
+        case 19:
+            cout << "\n19. So luong sinh vien nu.";
+            printLine(100);
+            printf("\n\n\tSo luong sinh vien nu: %d\n\n", soLuongSinhVienNu(dssv));
+            printLine(100);
+            pressAnyKey();
+            break;
+        case 20:
+            cout << "\n20. So luong sinh vien nam.";
+            printLine(100);
+            printf("\n\n\tSo luong sinh vien nam: %d\n\n", soLuongSinhVienNam(dssv));
+            printLine(100);
+            pressAnyKey();
+            break;
+        case 21:
+            cout << "\n21. Thong ke xep loai sinh vien.";
+            thongKeXepLoaiSinhVien(dssv);
+            pressAnyKey();
+            break;
+        case 22:
+            cout << "\n22. Doc file.";
+            pressAnyKey();
+            break;
+        case 23:
+            if (SLSV(dssv) > 0)
+            {
+                cout << "\n23. Ghi file.";
+                ghiFile(dssv, dsmh, dsbd, fileName);
+            }
+            else
+            {
+                cout << "\nSanh sach sinh vien trong!";
+            }
+            printf("\nGhi danh sach sinh vien vao file %s thanh cong!", fileName);
+            pressAnyKey();
+            break;
+        case 99:
+            cout << "\n99. Hien thi bang diem.";
+            hienThiBD(dsbd);
             pressAnyKey();
             break;
         case 0:
