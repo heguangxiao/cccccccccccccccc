@@ -956,7 +956,7 @@ int soLuongSinhVienNu(LISTSV sv)
     while (p != NULL)
     {
         strcpy(gioitinh, p->data.gioitinh);
-        if (strcmp(strupr(gioitinh), "NU") > 0)
+        if (strcmp(strupr(gioitinh), "NU") == 0)
         {
             result++;
         }
@@ -973,7 +973,7 @@ int soLuongSinhVienNam(LISTSV sv)
     while (p != NULL)
     {
         strcpy(gioitinh, p->data.gioitinh);
-        if (strcmp(strupr(gioitinh), "NAM") > 0)
+        if (strcmp(strupr(gioitinh), "NAM") == 0)
         {
             result++;
         }
